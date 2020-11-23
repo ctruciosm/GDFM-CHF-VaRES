@@ -1,6 +1,6 @@
 # GDFM-CHF_VaRES
 
-Reproducible codes for Hallin and Trucíos (2020)' paper.
+Reproducible codes for Hallin and Trucíos (2020)' paper. The main codes are in this repository. Additional matlab codes from the [MFE](https://www.kevinsheppard.com/code/matlab/mfe-toolbox/) Toolbox of Kevin Sheppard as well as [GDFM](http://www.barigozzi.eu/Codes.html) codes available in the Matteo Barigozzi website are also needed.
 
 
 ## Paper's abstract 
