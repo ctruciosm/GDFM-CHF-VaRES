@@ -6,8 +6,8 @@ clear all
 clc
 warning off
 
-%addpath(genpath('/home/alunos/10/ra109078/GDFM_VaR'))
-addpath(genpath('/Users/ctruciosm/Dropbox/Academico/VaR-GDFM-CHF/Codes'))
+addpath(genpath('/home/alunos/10/ra109078/GDFM_VaR'))
+%addpath(genpath('/Volumes/CTRUCIOS_SD/VaR_GDFM_CHF/CovarianceEstimationCodes'))
 
 
 data = importdata('retornos_GDFM_CHF_VaR_APP2.txt');
@@ -59,20 +59,29 @@ for i = 1:N
     h_one(i) = pari(1) + pari(2)*idioest(end,i)^2 + pari(3)*idioest(end,i)^2*(idioest(end,i)<0) + pari(4)*hidio(end,i);
 end
 % As we do not have Hu for the common components at time 1, we start in 2.
+
+% New two lines: 23-02-2021
+Haux = lambda*G*H_one*G'*lambda'+diag(h_one(1,:));
+Hone = 0.5*(Haux+Haux');
+
 for j = 2:W
     Haux = lambda*G*Htfull(:,:,j-1)*G'*lambda'+diag(hidio(j,:));
     H = 0.5*(Haux+Haux');
     sigma_p = sqrt(weights'*H*weights);
     e(j,l) = datatemp(j,:)*weights/sigma_p;
+    % new line 23-02-2021
+    rp(j,l) = weights'*chol(Hone, 'lower') * inv(chol(H, 'lower'))* datatemp(j,:)'; 
 end
 
-Haux = lambda*G*H_one*G'*lambda'+diag(h_one(1,:));
-H = 0.5*(Haux+Haux');
-sigma_p_day_ahead(l) = sqrt(weights'*H*weights);
-H_day_ahead(l,:) = H(:);
+%Haux = lambda*G*H_one*G'*lambda'+diag(h_one(1,:));
+%H = 0.5*(Haux+Haux');
+%sigma_p_day_ahead(l) = sqrt(weights'*H*weights);
+%H_day_ahead(l,:) = H(:);
+sigma_p_day_ahead(l) = sqrt(weights'*Hone*weights);
 end
 
-save('H_ABC.txt', 'H_day_ahead', '-ASCII');
+%save('H_ABC.txt', 'H_day_ahead', '-ASCII');
+save('rp_ABC.txt', 'rp', '-ASCII');
 save('s_ABC.txt', 'sigma_p_day_ahead', '-ASCII');
 save('e_ABC.txt', 'e', '-ASCII');
 

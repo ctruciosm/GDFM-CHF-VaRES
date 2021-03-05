@@ -32,13 +32,13 @@ q = q_aux(2);
 % end numbers of common shocks
 
 
-
 for l = 1:WR
 display(['Estimation GDFM-CHF: ',num2str(l),' out of ',num2str(WR)])
 
 AUX_data = data(l:l+W-1,:);
 mu = mean(AUX_data);
 datatemp = bsxfun(@minus,AUX_data,mu);
+
 
 % in each replication, we need to determine k, q and nfactors
 K = 10;                 % Lag B(L)
@@ -62,33 +62,44 @@ end
 % Htfull(:,:,j-1) because the first Htfull corresponds to the secondtime
 % u_t
 
-% New Two lines: 23-02-2021
-Haux = CL(:,:,1)*H_one*CL(:,:,1)'+diag(h_one(1,:));
-Hone = 0.5*(Haux+Haux');
+% New Bootstrap Scheme:
+% The common shock ~ MGARCH: 
+% u_t = Hu_t^{1/2} \eta_t  
+% ==> Hu_{t}^{-1/2} u_t = \eta_t
+% ==> u^{\ast}_{T+1} = Hu_{T+1}^{1/2} \eta^{\ast}_t
+% The idiosincratic components ~ MGARCH 
+% \epsilon_t = Hi_t^{1/2} \eta_t
+% ==> Hi_t^{-1/2} \epsilon_t = \eta_t
+% ==> \epsilon^{\ast}_{T+1} = Hi_{T+1}^{1/2} \eta^{\ast}_t
+
+% \chi_{T+1} = C(L) u^{\ast}_{T+1}
 
 for j = 2:W
-    Haux = CL(:,:,1)*Htfull(:,:,j-1)*CL(:,:,1)'+diag(hidio(j-1,:));
-    H = 0.5*(Haux+Haux');
-    sigma_p = sqrt(weights'*H*weights);
-    e(j,l) = datatemp(j,:)*weights/sigma_p;
-    % new line 23-02-2021
-    rp(j,l) = weights'*chol(Hone, 'lower') * inv(chol(H, 'lower'))* datatemp(j,:)';    
+    idio_one(j,:) = diag(sqrt(h_one))*diag(1./sqrt(hidio(j-1,:)))*idioest(j-1,:)';
+    u_one(j,:) = chol(H_one, 'lower')*inv(chol(Htfull(:,:,j-1), 'lower'))* v(j-1,:)';
+    
+    vv=[zeros(K-1,q); v; u_one(j,:)];
+    chi_one=zeros(N,1);
+    ii=W-k+1;
+    for jj=1:K
+        chi_one(:,1)=chi_one(:,1)+CL(:,:,jj)*vv(ii+K-jj,:)';
+    end;
+    common_one(j,:) = chi_one';
+    ret_one(j,:) = common_one(j,:) + idio_one(j,:);
+    rp(j,l) = weights'*ret_one(j,:)';
 end
 
-
-%Haux = CL(:,:,1)*H_one*CL(:,:,1)'+diag(h_one(1,:));
-%H = 0.5*(Haux+Haux');
-%sigma_p_day_ahead(l) = sqrt(weights'*H*weights);
-%H_day_ahead(l,:) = H(:);
+Haux = CL(:,:,1)*H_one*CL(:,:,1)'+diag(h_one(1,:));
+Hone = 0.5*(Haux+Haux');
 sigma_p_day_ahead(l) = sqrt(weights'*Hone*weights);
 end
 
 
 
+
 %save('H_GDFM-CHF.txt', 'H_day_ahead', '-ASCII');
-save('rp_GDFM-CHF.txt', 'rp', '-ASCII');
-save('s_GDFM-CHF.txt', 'sigma_p_day_ahead', '-ASCII');
-save('e_GDFM-CHF.txt', 'e', '-ASCII');
+save('rp_GDFM-CHF_Boot.txt', 'rp', '-ASCII');
+save('s_GDFM-CHF_Boot.txt', 'sigma_p_day_ahead', '-ASCII');
 
 
 
