@@ -323,7 +323,7 @@ print(xtable(VaRES_Table, caption = Caption, align = "r|rrrrr|rrrrr|rrrr"), file
 ##################################################
 
 
-Dates = read.table("data/Prices_GDFM_CHF_VaR_APP2_DATES.txt")[-1,]
+Dates = read.table("Data/Prices_GDFM_CHF_VaR_APP2_DATES.txt")[-1,]
 Dates = lubridate::ymd(Dates[-c(1:750)]) #Only OoS
 which(Dates == "2020-03-12") #1310
 
@@ -359,7 +359,7 @@ ggplot(figureVaR) + geom_line(aes(x = dates, y = OoS), colour="gray29") +
 ##################################################
 
 
-Dates = read.table("data/Prices_GDFM_CHF_VaR_APP2_DATES.txt")[-1,]
+Dates = read.table("Data/Prices_GDFM_CHF_VaR_APP2_DATES.txt")[-1,]
 Dates = lubridate::ymd(Dates[-c(1:750)]) #Only OoS
 which(Dates == "2020-03-12") #1310
 
