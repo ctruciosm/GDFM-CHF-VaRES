@@ -1,11 +1,11 @@
 # GDFM-CHF_VaRES
 
-Codes used in Hallin and Trucíos (2021)' paper (Econometrics and Statistics). The main codes are in this repository, however, additional matlab codes from the [MFE](https://www.kevinsheppard.com/code/matlab/mfe-toolbox/) Toolbox of Kevin Sheppard as well as [GDFM](http://www.barigozzi.eu/Codes.html) codes available in the Matteo Barigozzi website are also needed.
+Codes used in Hallin and Trucíos (2021)' paper (Econometrics and Statistics). The main codes are in this repository, however, additional matlab codes from the [MFE](https://www.kevinsheppard.com/code/matlab/mfe-toolbox/) Toolbox of Kevin Sheppard as well as [GDFM](http://www.barigozzi.eu/Codes.html) codes available in the Matteo Barigozzi website are also needed (Other codes,  `Generalized Dynamic Factor Model`).
 
 ## Instructions
 
 - The folder `cov_estimation` provides routines for computing the one-step-ahead portfolio returns based on different conditional covariance estimation procedures.
-- The `VaRES_Forecast_Backtesting.R` perform the bootstrap procedure to forecast both risk measures and also perform the backtesting exercise.
+- The `VaRES_Forecast_Backtesting.R` function performs the bootstrap procedure to forecast both risk measures (using the result from `cov_estimation` folder) and also performs the backtesting exercise.
 
 
 ## Paper's abstract 
