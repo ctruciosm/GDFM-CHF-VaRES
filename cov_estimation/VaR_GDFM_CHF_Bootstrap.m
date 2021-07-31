@@ -1,19 +1,18 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 %%%% GDFM-CHF: DCC with GJR and idiosyncratic GJR
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 clear all
 clc
 warning off
 
-addpath(genpath('/home/alunos/10/ra109078/GDFM_VaR'))
-%addpath(genpath('/Volumes/CTRUCIOS_SD/VaR_GDFM_CHF/CovarianceEstimationCodes'))
-
-
+addpath(genpath('/Volumes/CTRUCIOS_SD/Research/VaR_GDFM_CHF/CovarianceEstimationCodes/GDFM_VaR')) % GDFM codes from Barigozzi website
+addpath(genpath('/Volumes/CTRUCIOS_SD/Research/VaR_GDFM_CHF/CovarianceEstimationCodes/GDFM_VaR/MFE')) % MFE Toolbox
+addpath(genpath('/Users/ctruciosm/Desktop/GDFM-CHF-VaRES/aux_functions')) % Auxiliary functions provided in this repo
+addpath(genpath('/Users/ctruciosm/Desktop/GDFM-CHF-VaRES/data')) % Dataset provided in this repo
 data = importdata('retornos_GDFM_CHF_VaR_APP2.txt');
 
-[T N] = size(data);
 
+[T N] = size(data);
 WR = 1386;  %Out-of-Sample Period
 W  = T-WR;  %In-Sample
 
@@ -39,30 +38,21 @@ AUX_data = data(l:l+W-1,:);
 mu = mean(AUX_data);
 datatemp = bsxfun(@minus,AUX_data,mu);
 
-
 % in each replication, we need to determine k, q and nfactors
 K = 10;                 % Lag B(L)
 m = floor(sqrt(T));     % Lag Spectral density matrix
 k = 1;                  % Lags for the VAR
-nrepli = 30;           % number os permutations
+nrepli = 30;            % number os permutations
 
-    
- [chi, CL, v] = fhlz_nstd_p(datatemp(1:end,:),q+1,k,m,K,1:q,nrepli);
- idioest = datatemp(k+1:end,:)-chi;
-
-% uest has one less element (by the VAR(1) inside the GDFM), 
-% so the first Htfull is actually the second one when estimate the whole H
+[chi, CL, v] = fhlz_nstd_p(datatemp(1:end,:),q+1,k,m,K,1:q,nrepli);
+idioest = datatemp(k+1:end,:)-chi;
 [Htfull, H_one] = DCC_full(v);
 
 for i = 1:N
     [pari, ~, hidio(:,i)] = tarch(idioest(:,i),1,1,1,'STUDENTST');
     h_one(i) = pari(1) + pari(2)*idioest(end,i)^2 + pari(3)*idioest(end,i)^2*(idioest(end,i)<0) + pari(4)*hidio(end,i);
 end
-% As we do not have H for the common components at time 1, we start in 2.
-% Htfull(:,:,j-1) because the first Htfull corresponds to the secondtime
-% u_t
-
-% New Bootstrap Scheme:
+% New Bootstrap Scheme (second approach in the paper):
 % The common shock ~ MGARCH: 
 % u_t = Hu_t^{1/2} \eta_t  
 % ==> Hu_{t}^{-1/2} u_t = \eta_t
@@ -71,13 +61,11 @@ end
 % \epsilon_t = Hi_t^{1/2} \eta_t
 % ==> Hi_t^{-1/2} \epsilon_t = \eta_t
 % ==> \epsilon^{\ast}_{T+1} = Hi_{T+1}^{1/2} \eta^{\ast}_t
-
 % \chi_{T+1} = C(L) u^{\ast}_{T+1}
 
 for j = 2:W
     idio_one(j,:) = diag(sqrt(h_one))*diag(1./sqrt(hidio(j-1,:)))*idioest(j-1,:)';
     u_one(j,:) = chol(H_one, 'lower')*inv(chol(Htfull(:,:,j-1), 'lower'))* v(j-1,:)';
-    
     vv=[zeros(K-1,q); v; u_one(j,:)];
     chi_one=zeros(N,1);
     ii=W-k+1;
@@ -88,21 +76,5 @@ for j = 2:W
     ret_one(j,:) = common_one(j,:) + idio_one(j,:);
     rp(j,l) = weights'*ret_one(j,:)';
 end
-
-Haux = CL(:,:,1)*H_one*CL(:,:,1)'+diag(h_one(1,:));
-Hone = 0.5*(Haux+Haux');
-sigma_p_day_ahead(l) = sqrt(weights'*Hone*weights);
 end
-
-
-
-
-%save('H_GDFM-CHF.txt', 'H_day_ahead', '-ASCII');
 save('rp_GDFM-CHF_Boot.txt', 'rp', '-ASCII');
-save('s_GDFM-CHF_Boot.txt', 'sigma_p_day_ahead', '-ASCII');
-
-
-
-
-
-

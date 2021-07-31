@@ -3,6 +3,7 @@
 ###########################################
 #### VQ Test
 #### Paper: Evaluating Value at Risk models via quantile regressions
+#### Codes kindly provided by the authors, minor changes are mine.
 
 library(quantreg)
 VaR_VQR = function(r,VaR, alpha){
