@@ -5,10 +5,10 @@ clear all
 clc
 warning off
 
-addpath(genpath('/Volumes/CTRUCIOS_SD/Research/VaR_GDFM_CHF/CovarianceEstimationCodes/GDFM_VaR')) % GDFM codes from Barigozzi website
-addpath(genpath('/Volumes/CTRUCIOS_SD/Research/VaR_GDFM_CHF/CovarianceEstimationCodes/GDFM_VaR/MFE')) % MFE Toolbox
-addpath(genpath('/Users/ctruciosm/Desktop/GDFM-CHF-VaRES/aux_functions')) % Auxiliary functions provided in this repo
-addpath(genpath('/Users/ctruciosm/Desktop/GDFM-CHF-VaRES/Data')) % Dataset provided in this repo
+%addpath(genpath('/home/ctruciosm/Downloads/gdfm')) % GDFM codes from Barigozzi website
+addpath(genpath('/home/ctruciosm/Downloads/mfe-toolbox-master')) % MFE Toolbox
+addpath(genpath('/home/ctruciosm/GDFM-CHF-VaRES/aux_functions')) % Auxiliary functions provided in this repo
+addpath(genpath('/home/ctruciosm/GDFM-CHF-VaRES/Data')) % Dataset provided in this repo
 data = importdata('retornos_GDFM_CHF_VaR_APP2.txt');
 
 
