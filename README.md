@@ -2,7 +2,7 @@
 
 Codes used in Hallin and Trucíos (2021) [Econometrics and Statistics]. The main codes are in this repository, however, additional matlab codes from the [MFE](https://www.kevinsheppard.com/code/matlab/mfe-toolbox/) Toolbox of Kevin Sheppard are also needed.
 
-> Some Matlab codes are modifications from Mateo Barigozzi codes available on his [website](http://www.barigozzi.eu/Codes.html) and/or Mario Forni's codes kindly provided for him.
+> Some Matlab codes are modifications from Mateo Barigozzi codes available on his [website](http://www.barigozzi.eu/Codes.html) and/or Mario Forni's codes kindly provided by him.
 
 ## Instructions
 
